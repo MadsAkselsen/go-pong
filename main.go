@@ -16,7 +16,18 @@ import (
 // Handle collisions
 // Handle game over
 
-func printString(screen tcell.Screen, row, col int, str string) {
+const PaddleHeight = 4
+const PaddleSymbol = 0x2588
+
+type Paddle struct {
+	row, col, width, height int
+}
+
+var screen tcell.Screen
+var player1 *Paddle
+var player2 *Paddle
+
+func printString(row, col int, str string) {
 	for _, c := range str {
 		
 		screen.SetContent(col, row, c, nil, tcell.StyleDefault)
@@ -24,7 +35,7 @@ func printString(screen tcell.Screen, row, col int, str string) {
 	}
 }
 
-func Print(screen tcell.Screen, row, col int, width, height int, ch rune) {
+func Print(row, col int, width, height int, ch rune) {
 	for r := 0; r < height; r++ {
 		for c := 0; c < width; c++ {
 			screen.SetContent(col+c, row+r, ch, nil, tcell.StyleDefault)
@@ -33,18 +44,19 @@ func Print(screen tcell.Screen, row, col int, width, height int, ch rune) {
 	}
 }
 
-func displayHelloWorld(screen tcell.Screen) {
+func DrawState() {
 	screen.Clear()
-	// printString(screen, 2, 5, "Hello, World!")
-	Print(screen, 0, 0, 5, 5, '*')
+	Print(player1.row, player1.col, player1.width, player1.height, PaddleSymbol)
+	Print(player2.row, player2.col, player2.width, player2.height, PaddleSymbol)
 	screen.Show()
 }
 
 // This program just prints "Hello, World!".  Press ESC to exit.
 func main() {
-	screen := InitScreen()
+	InitScreen()
+	InitGameState()
 
-	displayHelloWorld(screen)
+	DrawState()
 
 	for {
 		switch ev := screen.PollEvent().(type) {
@@ -57,8 +69,9 @@ func main() {
 	}
 }
 
-func InitScreen() tcell.Screen {
-	screen, err := tcell.NewScreen()
+func InitScreen() {
+	var err error
+	screen, err = tcell.NewScreen()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
@@ -72,6 +85,20 @@ func InitScreen() tcell.Screen {
 		Background(tcell.ColorBlack).
 		Foreground(tcell.ColorWhite)
 	screen.SetStyle(defStyle)
+}
 
-	return screen
+func InitGameState() {
+	width, height := screen.Size()
+	paddleStart := height/2 - PaddleHeight/2
+
+	player1 = &Paddle{
+		row: paddleStart, col: 0, width: 1, height: PaddleHeight,
+	}
+
+	player2 = &Paddle{
+		row: paddleStart, col: width-1, width: 1, height: PaddleHeight,
+	}
+
+	Print(paddleStart, 0, 1, PaddleHeight, PaddleSymbol)
+	Print(paddleStart, width-1, 1, PaddleHeight, PaddleSymbol)
 }
