@@ -17,7 +17,9 @@ A game of pong that can be played by two players.
 
 ## Todo
 
--   add ball
--   add ball and player collision
--   add point system
--   add game over state
+-   moving ball
+-   ball and player collision
+-   point system
+-   game over state
+-   start screen
+-   player skins
