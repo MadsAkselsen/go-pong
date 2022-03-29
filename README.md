@@ -2,7 +2,7 @@
 
 A game of pong that can be played by two players.
 
-#### Controls
+### Controls
 
 ##### Player 1
 
@@ -15,7 +15,7 @@ A game of pong that can be played by two players.
 -   Move up: Arrow Up
 -   Move down: Arrow Down
 
-## Todo
+### Todo
 
 -   moving ball
 -   ball and player collision
@@ -23,3 +23,6 @@ A game of pong that can be played by two players.
 -   game over state
 -   start screen
 -   player skins
+
+### Current State
+![PongProgress](https://user-images.githubusercontent.com/11229485/160543131-6f4d2833-0234-42ad-aa6b-e0b6a6f7be2c.JPG)
