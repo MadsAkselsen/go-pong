@@ -8,15 +8,6 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-// capability to rnder stuff on screen
-// Draw paddles
-// Player movement
-// Take care of paddle boundaries
-// Draw ball
-// Update ball movement
-// Handle collisions
-// Handle game over
-
 const PaddleHeight = 4
 const PaddleSymbol = 0x2588
 
@@ -27,8 +18,9 @@ type Paddle struct {
 var screen tcell.Screen
 var player1 *Paddle
 var player2 *Paddle
+var debugLog string
 
-func printString(row, col int, str string) {
+func PrintString(row, col int, str string) {
 	for _, c := range str {
 		
 		screen.SetContent(col, row, c, nil, tcell.StyleDefault)
@@ -47,6 +39,7 @@ func Print(row, col int, width, height int, ch rune) {
 
 func DrawState() {
 	screen.Clear()
+	PrintString(0, 0, debugLog)
 	Print(player1.row, player1.col, player1.width, player1.height, PaddleSymbol)
 	Print(player2.row, player2.col, player2.width, player2.height, PaddleSymbol)
 	screen.Show()
@@ -56,13 +49,27 @@ func DrawState() {
 func main() {
 	InitScreen()
 	InitGameState()
-	InitUserInput()
+	inputChan := InitUserInput()
 
 	DrawState()
 
 	for {
 		DrawState()
 		time.Sleep(50 * time.Millisecond)
+
+		key := <- inputChan
+		if key == "Rune[q]" {
+			screen.Fini()
+			os.Exit(0)
+		} else if key == "Rune[w]" {
+			player1.row--
+		} else if key == "Rune[s]" {
+			player1.row++
+		} else if key == "Up" {
+			player2.row--
+		} else if key == "Down" {
+			player2.row++
+		}
 	}
 }
 
@@ -84,26 +91,32 @@ func InitScreen() {
 	screen.SetStyle(defStyle)
 }
 
-func InitUserInput() {
+func InitUserInput() chan string {
+	// creating a channel to be a communication channel between processes
+	inputChan := make(chan string)
 	go func() {
 		for {
 			switch ev := screen.PollEvent().(type) {
 			case *tcell.EventKey:
-				if ev.Rune() == 'q' {
-					screen.Fini()
-					os.Exit(0)
-				} else if ev.Rune() == 'w' {
-					player1.row--
-				} else if ev.Rune() == 's' {
-					player1.row++
-				} else if ev.Key() == tcell.KeyUp {
-					player2.row--
-				} else if ev.Key() == tcell.KeyDown {
-					player2.row++
-				}
+				debugLog = ev.Name()
+				inputChan <- ev.Name()
+				// if ev.Rune() == 'q' {
+				// 	screen.Fini()
+				// 	os.Exit(0)
+				// } else if ev.Rune() == 'w' {
+				// 	player1.row--
+				// } else if ev.Rune() == 's' {
+				// 	player1.row++
+				// } else if ev.Key() == tcell.KeyUp {
+				// 	player2.row--
+				// } else if ev.Key() == tcell.KeyDown {
+				// 	player2.row++
+				// }
 			}
 		}
 	}()
+
+	return inputChan
 }
 
 func InitGameState() {
