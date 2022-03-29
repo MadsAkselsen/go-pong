@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -55,17 +56,13 @@ func DrawState() {
 func main() {
 	InitScreen()
 	InitGameState()
+	InitUserInput()
 
 	DrawState()
 
 	for {
-		switch ev := screen.PollEvent().(type) {
-		case *tcell.EventKey:
-			if ev.Key() == tcell.KeyEnter {
-				screen.Fini()
-				os.Exit(0)
-			}
-		}
+		DrawState()
+		time.Sleep(50 * time.Millisecond)
 	}
 }
 
@@ -85,6 +82,28 @@ func InitScreen() {
 		Background(tcell.ColorBlack).
 		Foreground(tcell.ColorWhite)
 	screen.SetStyle(defStyle)
+}
+
+func InitUserInput() {
+	go func() {
+		for {
+			switch ev := screen.PollEvent().(type) {
+			case *tcell.EventKey:
+				if ev.Rune() == 'q' {
+					screen.Fini()
+					os.Exit(0)
+				} else if ev.Rune() == 'w' {
+					player1.row--
+				} else if ev.Rune() == 's' {
+					player1.row++
+				} else if ev.Key() == tcell.KeyUp {
+					player2.row--
+				} else if ev.Key() == tcell.KeyDown {
+					player2.row++
+				}
+			}
+		}
+	}()
 }
 
 func InitGameState() {
