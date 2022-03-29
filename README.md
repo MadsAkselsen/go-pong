@@ -8,7 +8,6 @@ A game of pong that can be played by two players.
 
 -   Move up: W
 -   Move down: S
--
 
 ##### Player 2
 
