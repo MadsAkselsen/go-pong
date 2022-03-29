@@ -20,6 +20,13 @@ var player1 *Paddle
 var player2 *Paddle
 var debugLog string
 
+type Boundary int
+
+const (
+	Top Boundary = iota
+	Bottom
+)
+
 func main() {
 	InitScreen()
 	InitGameState()
@@ -32,19 +39,7 @@ func main() {
 		time.Sleep(50 * time.Millisecond)
 
 		key := ReadInput(inputChan)
-		
-		if key == "Rune[q]" {
-			screen.Fini()
-			os.Exit(0)
-		} else if key == "Rune[w]" {
-			player1.row--
-		} else if key == "Rune[s]" {
-			player1.row++
-		} else if key == "Up" {
-			player2.row--
-		} else if key == "Down" {
-			player2.row++
-		}
+		HandleUserInput(key)
 	}
 }
 
@@ -64,6 +59,35 @@ func InitScreen() {
 		Background(tcell.ColorBlack).
 		Foreground(tcell.ColorWhite)
 	screen.SetStyle(defStyle)
+}
+
+func HandleUserInput(key string) {
+
+	if key == "Rune[q]" {
+		screen.Fini()
+		os.Exit(0)
+	} else if key == "Rune[w]" && IsWithinBoundaries(player1, Top) {
+		player1.row--
+	} else if key == "Rune[s]" && IsWithinBoundaries(player1, Bottom) {
+		player1.row++
+	} else if key == "Up" && IsWithinBoundaries(player2, Top) {
+		player2.row--
+	} else if key == "Down" && IsWithinBoundaries(player2, Bottom) {
+		player2.row++
+	}
+}
+
+func IsWithinBoundaries(player *Paddle, boundary Boundary) bool {
+	switch boundary {
+	case Top:
+		return player.row > 0
+	case Bottom:
+		_, height := screen.Size()
+		return player.row < height - player.height
+	default:
+		fmt.Println("Failure checking boundaries")
+		return false
+	}
 }
 
 func InitUserInput() chan string {
