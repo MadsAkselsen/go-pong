@@ -20,32 +20,6 @@ var player1 *Paddle
 var player2 *Paddle
 var debugLog string
 
-func PrintString(row, col int, str string) {
-	for _, c := range str {
-		
-		screen.SetContent(col, row, c, nil, tcell.StyleDefault)
-		col += 1
-	}
-}
-
-func Print(row, col int, width, height int, ch rune) {
-	for r := 0; r < height; r++ {
-		for c := 0; c < width; c++ {
-			screen.SetContent(col+c, row+r, ch, nil, tcell.StyleDefault)
-		}
-		
-	}
-}
-
-func DrawState() {
-	screen.Clear()
-	PrintString(0, 0, debugLog)
-	Print(player1.row, player1.col, player1.width, player1.height, PaddleSymbol)
-	Print(player2.row, player2.col, player2.width, player2.height, PaddleSymbol)
-	screen.Show()
-}
-
-// This program just prints "Hello, World!".  Press ESC to exit.
 func main() {
 	InitScreen()
 	InitGameState()
@@ -57,7 +31,8 @@ func main() {
 		DrawState()
 		time.Sleep(50 * time.Millisecond)
 
-		key := <- inputChan
+		key := ReadInput(inputChan)
+		
 		if key == "Rune[q]" {
 			screen.Fini()
 			os.Exit(0)
@@ -100,18 +75,6 @@ func InitUserInput() chan string {
 			case *tcell.EventKey:
 				debugLog = ev.Name()
 				inputChan <- ev.Name()
-				// if ev.Rune() == 'q' {
-				// 	screen.Fini()
-				// 	os.Exit(0)
-				// } else if ev.Rune() == 'w' {
-				// 	player1.row--
-				// } else if ev.Rune() == 's' {
-				// 	player1.row++
-				// } else if ev.Key() == tcell.KeyUp {
-				// 	player2.row--
-				// } else if ev.Key() == tcell.KeyDown {
-				// 	player2.row++
-				// }
 			}
 		}
 	}()
@@ -133,4 +96,39 @@ func InitGameState() {
 
 	Print(paddleStart, 0, 1, PaddleHeight, PaddleSymbol)
 	Print(paddleStart, width-1, 1, PaddleHeight, PaddleSymbol)
+}
+
+func ReadInput(inputChan chan string) string {
+	var key string
+	select {
+		case key = <-inputChan:
+		default:
+			key = ""
+	}
+	return key
+}
+
+func PrintString(row, col int, str string) {
+	for _, c := range str {
+		
+		screen.SetContent(col, row, c, nil, tcell.StyleDefault)
+		col += 1
+	}
+}
+
+func Print(row, col int, width, height int, ch rune) {
+	for r := 0; r < height; r++ {
+		for c := 0; c < width; c++ {
+			screen.SetContent(col+c, row+r, ch, nil, tcell.StyleDefault)
+		}
+		
+	}
+}
+
+func DrawState() {
+	screen.Clear()
+	PrintString(0, 0, debugLog)
+	Print(player1.row, player1.col, player1.width, player1.height, PaddleSymbol)
+	Print(player2.row, player2.col, player2.width, player2.height, PaddleSymbol)
+	screen.Show()
 }
