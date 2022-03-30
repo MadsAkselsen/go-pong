@@ -8,12 +8,19 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-const PaddleHeight = 4
 const PaddleSymbol = 0x2588
 const BallSymbol = 0x25CF
 
+const PaddleHeight = 4
+const InitialBallVelocityRow = 1
+// a square on the screen is 2 times taller than its width
+// so ball will be slower horizontally. To make even speed,
+// we make horizontal ball velocity 2
+const InitialBallVelocityCol = 2
+
 type GameObject struct {
 	row, col, width, height int
+	velRow, velCol			int
 	symbol					rune
 }
 
@@ -40,11 +47,18 @@ func main() {
 	DrawState()
 
 	for {
+		HandleUserInput(ReadInput(inputChan))
 		DrawState()
-		time.Sleep(50 * time.Millisecond)
+		UpdateState()
 
-		key := ReadInput(inputChan)
-		HandleUserInput(key)
+		time.Sleep(75 * time.Millisecond)
+	}
+}
+
+func UpdateState() {
+	for i := range gameObjects {
+		gameObjects[i].row += gameObjects[i].velRow
+		gameObjects[i].col += gameObjects[i].velCol
 	}
 }
 
@@ -116,15 +130,21 @@ func InitGameState() {
 	paddleStart := height/2 - PaddleHeight/2
 
 	player1Paddle = &GameObject{
-		row: paddleStart, col: 0, width: 1, height: PaddleHeight, symbol: PaddleSymbol,
+		row: paddleStart, col: 0, width: 1, height: PaddleHeight,
+		velRow: 0, velCol: 0,
+		symbol: PaddleSymbol,
 	}
 
 	player2Paddle = &GameObject{
-		row: paddleStart, col: width-1, width: 1, height: PaddleHeight, symbol: PaddleSymbol,
+		row: paddleStart, col: width-1, width: 1, height: PaddleHeight,
+		velRow: 0, velCol: 0,
+		symbol: PaddleSymbol,
 	}
 
 	ball = &GameObject{
-		row: height / 2, col: width / 2, width: 1, height: 1, symbol: BallSymbol,
+		row: height / 2, col: width / 2, width: 1, height: 1,
+		velRow: InitialBallVelocityRow, velCol: InitialBallVelocityCol,
+		symbol: BallSymbol,
 	}
 
 	gameObjects = []*GameObject{
