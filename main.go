@@ -52,7 +52,7 @@ func main() {
 		DrawState()
 		UpdateState()
 
-		time.Sleep(75 * time.Millisecond)
+		time.Sleep(25 * time.Millisecond)
 	}
 
 	screenWidth, screenHeight := screen.Size()
