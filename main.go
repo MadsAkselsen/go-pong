@@ -47,13 +47,43 @@ func main() {
 
 	DrawState()
 
-	for {
+	for !IsGameOver() {
 		HandleUserInput(ReadInput(inputChan))
 		DrawState()
 		UpdateState()
 
 		time.Sleep(75 * time.Millisecond)
 	}
+
+	screenWidth, screenHeight := screen.Size()
+	winner := GetWinner()
+	PrintStringcentered(screenHeight/2-1, screenWidth/2, "Game Over!")
+	PrintStringcentered(screenHeight/2, screenWidth/2, fmt.Sprintf("%s wins...", winner))
+	
+	// screen.Clear()
+	screen.Show()
+	time.Sleep(3 * time.Second)
+	screen.Fini()
+}
+
+func PrintStringcentered(row, col int, str string) {
+	col = col - len(str)/2
+	PrintString(row, col, str)
+}
+
+func GetWinner() string {
+	screenWidth, _ := screen.Size()
+	if ball.col < 0 {
+		return "Player 1"
+	} else if ball.col >= screenWidth {
+		return "Player 2"
+	} else {
+		return ""
+	}
+}
+
+func IsGameOver() bool {
+	return GetWinner() != ""
 }
 
 func CollidesWithPaddle(ball *GameObject, paddle *GameObject) bool {
@@ -232,8 +262,6 @@ func DrawState() {
 	for _, obj := range gameObjects {
 		Print(obj.row, obj.col, obj.width, obj.height, obj.symbol)
 	}
-	// Print(player1Paddle.row, player1Paddle.col, player1Paddle.width, player1Paddle.height, PaddleSymbol)
-	// Print(player2Paddle.row, player2Paddle.col, player2Paddle.width, player2Paddle.height, PaddleSymbol)
-	// Print(ball.row, ball.col, ball.width, ball.height, BallSymbol)
+	
 	screen.Show()
 }
