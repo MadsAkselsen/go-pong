@@ -28,6 +28,7 @@ var screen tcell.Screen
 var player1Paddle *GameObject
 var player2Paddle *GameObject
 var ball *GameObject
+var isGamePaused bool
 var debugLog string
 
 var gameObjects []*GameObject
@@ -55,10 +56,47 @@ func main() {
 	}
 }
 
+func CollidesWithPaddle(ball *GameObject, paddle *GameObject) bool {
+	var collidesOnColumn bool
+	if ball.col < paddle.col {
+		collidesOnColumn = ball.col + ball.velCol >= paddle.col
+	} else {
+		collidesOnColumn = ball.col + ball.velCol <= paddle.col
+	}
+	return 	collidesOnColumn &&
+			ball.row >= paddle.row &&
+			ball.row < paddle.row + paddle.height
+}
+
+func CollidesWithWall(obj *GameObject) bool {
+	_, screenHeight := screen.Size()
+	isWithinBoundaries := obj.row + obj.velRow >= 0 && obj.row + obj.velRow < screenHeight
+
+	if isWithinBoundaries {
+
+		return false
+	}
+
+	return true
+}
+
 func UpdateState() {
+	if isGamePaused {
+		return
+	}
+
+	// movement of paddles and ball
 	for i := range gameObjects {
 		gameObjects[i].row += gameObjects[i].velRow
 		gameObjects[i].col += gameObjects[i].velCol
+	}
+
+	if CollidesWithPaddle(ball, player1Paddle) || CollidesWithPaddle(ball, player2Paddle) {
+		ball.velCol = -ball.velCol
+	}
+
+	if CollidesWithWall(ball) {
+		ball.velRow = -ball.velRow
 	}
 }
 
@@ -93,6 +131,8 @@ func HandleUserInput(key string) {
 		player2Paddle.row--
 	} else if key == "Down" && IsWithinBoundaries(player2Paddle, Bottom) {
 		player2Paddle.row++
+	} else if key == "Rune[p]" {
+		isGamePaused = !isGamePaused
 	}
 }
 
@@ -116,7 +156,6 @@ func InitUserInput() chan string {
 		for {
 			switch ev := screen.PollEvent().(type) {
 			case *tcell.EventKey:
-				debugLog = ev.Name()
 				inputChan <- ev.Name()
 			}
 		}
@@ -127,6 +166,7 @@ func InitUserInput() chan string {
 
 func InitGameState() {
 	width, height := screen.Size()
+
 	paddleStart := height/2 - PaddleHeight/2
 
 	player1Paddle = &GameObject{
@@ -183,8 +223,12 @@ func Print(row, col int, width, height int, ch rune) {
 }
 
 func DrawState() {
+	if isGamePaused {
+		return
+	}
+
 	screen.Clear()
-	PrintString(0, 0, debugLog)
+	// PrintString(0, 0, debugLog) //uncomment to enable debuglog
 	for _, obj := range gameObjects {
 		Print(obj.row, obj.col, obj.width, obj.height, obj.symbol)
 	}
