@@ -25,6 +25,7 @@ A game of pong that can be played by two players.
 -   point system
 -   start screen
 -   player skins
+-   optimize performance
 
 ### Installation
 There is a build file which can be run with `./go-executable-build.bash`
