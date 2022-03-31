@@ -2,6 +2,8 @@
 
 A game of pong that can be played by two players.
 
+<img src="https://user-images.githubusercontent.com/11229485/160986286-40960b71-c796-4e5d-b424-1039799b4611.JPG" width="400" />
+
 ### Controls
 
 ##### Player 1
@@ -23,6 +25,3 @@ A game of pong that can be played by two players.
 -   point system
 -   start screen
 -   player skins
-
-
-<img src="https://user-images.githubusercontent.com/11229485/160986286-40960b71-c796-4e5d-b424-1039799b4611.JPG" width="400" />
