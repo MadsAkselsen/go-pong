@@ -14,14 +14,16 @@ A game of pong that can be played by two players.
 -   Move up: Arrow Up
 -   Move down: Arrow Down
 
-### Todo
+##### Other
 
--   moving ball
--   ball and player collision
+-   Pause: p
+-   Exit: q
+
+### Todo
 -   point system
--   game over state
 -   start screen
 -   player skins
 
-### Current State
-![PongProgress](https://user-images.githubusercontent.com/11229485/160543131-6f4d2833-0234-42ad-aa6b-e0b6a6f7be2c.JPG)
+
+![](https://user-images.githubusercontent.com/11229485/160986286-40960b71-c796-4e5d-b424-1039799b4611.JPG | width=100)
+
