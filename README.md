@@ -25,5 +25,5 @@ A game of pong that can be played by two players.
 -   player skins
 
 
-![](https://user-images.githubusercontent.com/11229485/160986286-40960b71-c796-4e5d-b424-1039799b4611.JPG | width=100)
+![test](https://user-images.githubusercontent.com/11229485/160986286-40960b71-c796-4e5d-b424-1039799b4611.JPG | width=100)
 
