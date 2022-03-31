@@ -25,3 +25,8 @@ A game of pong that can be played by two players.
 -   point system
 -   start screen
 -   player skins
+
+### Installation
+There is a build file which can be run with `./go-executable-build.bash`
+Until tcell is updated, building executables doesnt work. In the meantime, run `go run main.go`
+source: https://github.com/gdamore/tcell/pull/520
